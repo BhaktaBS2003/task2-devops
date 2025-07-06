@@ -18,23 +18,21 @@ jobs:
           tfsec terraform/ || true
 
   trivy:
-  name: Docker Image Vulnerability Scan
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
+    name: Docker Image Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Install Trivy (Latest)
-      run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-        trivy --version
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          trivy-version: '0.50.2'  # You can update to latest version if needed
 
-    - name: Build Docker image
-      run: docker build -t devops-app .
+      - name: Build Docker image
+        run: docker build -t devops-app .
 
-    - name: Scan image with Trivy
-      run: trivy image devops-app
-
-
+      - name: Scan image with Trivy
+        run: trivy image --security-checks vuln --severity HIGH,CRITICAL devops-app
 
   deploy:
     name: Deploy to Kubernetes
@@ -53,4 +51,3 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/
-
