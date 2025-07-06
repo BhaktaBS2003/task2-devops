@@ -41,24 +41,24 @@ jobs:
           trivy image --security-checks vuln --severity HIGH,CRITICAL --exit-code 1 devops-app
 
   deploy:
-  name: Deploy to Kubernetes
-  runs-on: ubuntu-latest
-  needs: [tfsec, trivy]
-  steps:
-    - uses: actions/checkout@v3
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: [tfsec, trivy]
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: v1.29.0
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.29.0
 
-    - name: Set up kubeconfig
-      run: |
-        echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig
-        export KUBECONFIG=$PWD/kubeconfig
-        kubectl config get-contexts
+      - name: Set up kubeconfig
+        run: |
+          echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          kubectl config get-contexts
 
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f k8s/
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
 
