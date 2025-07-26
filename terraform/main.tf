@@ -8,6 +8,6 @@ resource "aws_s3_bucket" "example" {
 }
 
 resource "random_id" "bucket" {
-  byte_length = 4
+  byte_length = 5
 }
 
